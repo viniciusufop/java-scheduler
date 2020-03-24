@@ -1,0 +1,53 @@
+# Configuretion from my application in K8S
+# Service configuration
+apiVersion: v1
+kind: Service
+metadata:
+  name: javaschedule
+  namespace: default
+  labels:
+    app: javaschedule
+spec:
+  ports:
+    - port: 9999
+      protocol: TCP
+      targetPort: ui
+  selector:
+    app: javaschedule
+---
+# Deployment configuration
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: javaschedule
+  namespace: default
+  labels:
+    app: javaschedule
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: javaschedule
+  template:
+    metadata:
+      labels:
+        app: javaschedule
+      annotations:
+        sidecar.istio.io/inject: "true"
+    spec:
+      containers:
+        - image: viniciusfsouza/schedule:latest
+          name: javaschedule
+          resources:
+            # need more cpu upon initialization, therefore burstable class
+            limits:
+              cpu: 1000m
+            requests:
+              cpu: 100m
+          env:
+            - name: discovery.type
+              value: single-node
+          ports:
+            - containerPort: 9999
+              name: ui
+              protocol: TCP
