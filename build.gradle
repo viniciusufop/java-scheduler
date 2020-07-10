@@ -12,10 +12,22 @@ repositories {
 	mavenCentral()
 }
 
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+
+	all {
+		exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
+	}
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-quartz'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-log4j2'
 
+	compileOnly 'org.graylog2:gelfj:1.1.16'
 	compileOnly 'org.projectlombok:lombok:1.18.12'
 
 	annotationProcessor 'org.projectlombok:lombok:1.18.12'
